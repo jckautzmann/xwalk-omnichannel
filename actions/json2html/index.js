@@ -33,7 +33,7 @@ async function main (params) {
     // check for missing request input parameters and headers
     const requiredParams = [/* add required params */]
     const requiredHeaders = ['Authorization']
-    const errorMessage = checkMissingRequestInputs(params, requiredParams, requiredHeaders)
+    const errorMessage = null // checkMissingRequestInputs(params, requiredParams, requiredHeaders)
     if (errorMessage) {
       // return and log client errors
       return errorResponse(400, errorMessage, logger)
@@ -41,16 +41,30 @@ async function main (params) {
 
     // extract the user Bearer token from the Authorization header
     const token = getBearerToken(params)
-
-    // replace this with the api you want to access
-    const apiEndpoint = 'https://adobeioruntime.net/api/v1'
-
-    // fetch content from external api endpoint
-    const res = await fetch(apiEndpoint)
+    // log the token
+    logger.debug(`Bearer token: ${token}`);
+    
+    // TODO: get the AEM Author URL from the request
+    const apiEndpoint = 'https://author-p130360-e1272151.adobeaemcloud.com/api/assets/xwalk-omnichannel/press/press1.json';
+    
+    // TODO: get the AEM login token from the request (Bearer token from the Authorization header)
+    const loginToken = 'eyJhbGciOiJSUzI1NiIsIng1dSI6Imltc19uYTEta2V5LWF0LTEuY2VyIiwia2lkIjoiaW1zX25hMS1rZXktYXQtMSIsIml0dCI6ImF0In0.eyJpZCI6IjE3NTUyNzAwMDQwNTJfMDllZjg2MmQtM2YxZC00Y2UwLTllZjYtZWNjNzgzNWFkODZjX3VlMSIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJjbGllbnRfaWQiOiJkZXYtY29uc29sZS1wcm9kIiwidXNlcl9pZCI6Ijg1QUUxRkYwNjMxQzMzREEwQTQ5NUUxOEA3ZWViMjBmODYzMWMwY2I3NDk1YzA2LmUiLCJzdGF0ZSI6IlJkbEFLZnBJRVlmaFJkRmtVS21HMUh1RSIsImFzIjoiaW1zLW5hMSIsImFhX2lkIjoiQkY5QUQ0NDE1NDg5RTZDRDBBNEM5OEEyQGFkb2JlLmNvbSIsImN0cCI6MCwiZmciOiJaV1JFRk5NTlZMUDU0SFdLSE9RVjJYQUFVVSIsInNpZCI6IjE3NTUyNTI1NDY4MTFfYTQ4OGFhNmItMDA0Yy00OTJlLTg5NjktOTk1OGY3M2IyNGI1X3ZhNmMyIiwicnRpZCI6IjE3NTUyNzAwMDQwNTNfMjVhY2M0OTYtYmY3OS00OGIyLTk0ZGYtYjE3YzczYjMyMTgzX3VlMSIsIm1vaSI6IjYzMTkwY2I3IiwicGJhIjoiTWVkU2VjTm9FVixMb3dTZWMiLCJydGVhIjoiMTc1NjQ3OTYwNDA1MyIsImV4cGlyZXNfaW4iOiI4NjQwMDAwMCIsImNyZWF0ZWRfYXQiOiIxNzU1MjcwMDA0MDUyIiwic2NvcGUiOiJBZG9iZUlELG9wZW5pZCxyZWFkX29yZ2FuaXphdGlvbnMsYWRkaXRpb25hbF9pbmZvLnByb2plY3RlZFByb2R1Y3RDb250ZXh0LGFkZGl0aW9uYWxfaW5mby5yb2xlcyJ9.eo52jJGZiFhSBFwEqvXJtOCwfEbrxINXRm5aujZFKfMeej4OD1IkNT2qOulFtd02NTcQNxAjN6MmDuEy_r80TiDhLH1GpFiAzwlu8JswTVpRHIfyGsGtjR4m6LtV3COeChamN4EqGZ_W8bM65jIq0omysAUSdqq6n0mqfyTAF3e1OZ8c2piStU93IAUhOQ7mZXYw3KX5OppTcDfQAaxTcPIxWGXvpY-3pI6Cv6W7cFZfjcHdJyuhv4upYbySHLa3scH-SjNbwxCTqWdDoX5HW4xZIS14SpigGgv4Lnd4Vw_FqFrmggnQK2botSCeW9dxkwINle-DPTIYEeAnjyXilg';
+    
+    // fetch the API endpoint with the Authorization header
+    const res = await fetch(apiEndpoint, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${loginToken}`
+      }
+    });
+    
     if (!res.ok) {
       throw new Error('request to ' + apiEndpoint + ' failed with status code ' + res.status)
     }
     const content = await res.json()
+    
+    // TODO: transform the JSON into semantic HTML: use Amol's json2html library
+    
     const response = {
       statusCode: 200,
       body: content
